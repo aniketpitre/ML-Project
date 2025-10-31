@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+python-multipart
+Pillow
+numpy
+aiofiles
+python-dotenv
+# Use facenet-pytorch for server-side face detection & embeddings (avoids dlib)
+# NOTE: Installing torch/facenet-pytorch is easiest via conda; pip installs are
+# possible but may be large. See README for conda instructions.
+facenet-pytorch
+torch
