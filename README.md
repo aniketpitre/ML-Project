@@ -176,4 +176,5 @@ IMPORTANT NOTES
 - Names are used as folder names. Avoid slashes or weird characters in names (I can add sanitization if you want).
 - Matching is not perfect; change the threshold in `main.py` if you need stricter/looser matching.
 
+  Thank you
 
