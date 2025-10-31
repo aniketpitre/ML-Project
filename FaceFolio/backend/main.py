@@ -117,6 +117,9 @@ app.add_middleware(
 # Serve the cropped face images as static files
 app.mount(f"/{TEMP_CROP_DIR}", StaticFiles(directory=TEMP_CROP_DIR), name="crops")
 
+# Serve sorted photos so the UI can preview sorted images
+app.mount(f"/{SORTED_PHOTOS_DIR}", StaticFiles(directory=SORTED_PHOTOS_DIR), name="sorted_photos")
+
 # Serve a minimal frontend (single-page app) from the static/ directory at the root.
 # This allows visiting http://<host>:<port>/ to load the UI while keeping API routes
 # Mount the frontend static assets under /static to avoid catching API routes.
@@ -345,6 +348,39 @@ async def finalize_and_sort(request: FinalizeSortRequest):
                 pass
 
     return {"message": f"Photo sorted successfully for {', '.join(all_names_in_photo)}"}
+
+
+@app.get("/api/sorted-folders")
+def list_sorted_folders():
+    """Return a mapping of person -> list of image URLs in their sorted folder.
+
+    URLs are served under /sorted_photos/<person>/<filename>.
+    """
+    result = {}
+    if not os.path.exists(SORTED_PHOTOS_DIR):
+        return result
+
+    for name in os.listdir(SORTED_PHOTOS_DIR):
+        person_path = os.path.join(SORTED_PHOTOS_DIR, name)
+        if not os.path.isdir(person_path):
+            continue
+        files = []
+        try:
+            for fname in os.listdir(person_path):
+                fpath = os.path.join(person_path, fname)
+                if os.path.isfile(fpath):
+                    files.append(f"/{SORTED_PHOTOS_DIR}/{name}/{fname}")
+        except Exception:
+            files = []
+        result[name] = files
+    return result
+
+
+@app.get("/api/known-people")
+def get_known_people():
+    """Return the list of known people from the encodings file."""
+    _, known_names = load_known_faces()
+    return {"known_people": known_names}
 
 
 if __name__ == "__main__":

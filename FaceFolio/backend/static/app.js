@@ -6,6 +6,8 @@ const identifiedDiv = document.getElementById('identified');
 const unidentifiedDiv = document.getElementById('unidentified');
 const finalizeBtn = document.getElementById('finalizeBtn');
 const autoSortBtn = document.getElementById('autoSortBtn');
+const knownPeopleDiv = document.getElementById('knownPeople');
+const sortedFoldersDiv = document.getElementById('sortedFolders');
 
 let lastResponse = null;
 
@@ -31,9 +33,12 @@ async function doUpload(){
       return;
     }
     const data = await res.json();
-    lastResponse = data;
-    renderResult(data);
-    setStatus('Scan complete.');
+  lastResponse = data;
+  renderResult(data);
+  // Refresh known people / sorted folders view after a scan (so missing marks are accurate)
+  try{ await fetchAndRenderKnownPeople(); }catch(e){}
+  try{ await fetchAndRenderSortedFolders(); }catch(e){}
+  setStatus('Scan complete.');
   }catch(err){
     setStatus('Upload error: '+err, true);
   }
@@ -169,10 +174,79 @@ if(autoSortBtn){
   });
 }
 
-// On load, small check
+// On load: refresh known people and sorted folders, then do a light OPTIONS check
 (async ()=>{
   try{
-    const r = await fetch('/api/process-photo', { method: 'OPTIONS' });
-    // no-op, just checking server
+    await fetchAndRenderKnownPeople();
+    await fetchAndRenderSortedFolders();
+    // a light OPTIONS check to warm the endpoint (ignore result)
+    await fetch('/api/process-photo', { method: 'OPTIONS' });
   }catch(e){ /* ignore */ }
 })();
+
+
+// Fetch & render known people (used to show missing/ present state)
+async function fetchAndRenderKnownPeople(){
+  if(!knownPeopleDiv) return;
+  knownPeopleDiv.textContent = 'Loading...';
+  try{
+    const res = await fetch('/api/known-people');
+    if(!res.ok){ knownPeopleDiv.textContent = 'Failed to load'; return; }
+    const data = await res.json();
+    const known = data.known_people || [];
+    knownPeopleDiv.innerHTML = '';
+    if(known.length===0){ knownPeopleDiv.innerHTML = '<em>No known people yet</em>'; return; }
+
+    const ul = document.createElement('ul');
+    ul.className = 'known-list';
+    known.forEach(name=>{
+      const li = document.createElement('li');
+      li.textContent = name;
+      // If we have a recent scan, show present/missing state
+      if(lastResponse && Array.isArray(lastResponse.identified_people)){
+        if(lastResponse.identified_people.includes(name)){
+          li.className = 'present';
+          li.title = 'Present in the last scanned image';
+        }else{
+          li.className = 'missing';
+          li.title = 'Not present in the last scanned image';
+        }
+      }
+      ul.appendChild(li);
+    });
+    knownPeopleDiv.appendChild(ul);
+  }catch(err){ knownPeopleDiv.textContent = 'Error'; }
+}
+
+
+// Fetch & render sorted folders with small preview images
+async function fetchAndRenderSortedFolders(){
+  if(!sortedFoldersDiv) return;
+  sortedFoldersDiv.textContent = 'Loading...';
+  try{
+    const res = await fetch('/api/sorted-folders');
+    if(!res.ok){ sortedFoldersDiv.textContent = 'Failed to load'; return; }
+    const data = await res.json();
+    sortedFoldersDiv.innerHTML = '';
+    const names = Object.keys(data || {});
+    if(names.length===0){ sortedFoldersDiv.innerHTML = '<em>No sorted folders yet</em>'; return; }
+
+    const container = document.createElement('div'); container.className='folders-grid';
+    names.forEach(name=>{
+      const files = data[name] || [];
+      const card = document.createElement('div'); card.className='folder-card';
+      const title = document.createElement('div'); title.className='folder-title'; title.textContent = name;
+      card.appendChild(title);
+      if(files.length>0){
+        const img = document.createElement('img'); img.src = files[0]; img.className='folder-thumb'; img.alt = name;
+        card.appendChild(img);
+      }else{
+        const p = document.createElement('div'); p.className='muted'; p.textContent = 'Empty'; card.appendChild(p);
+      }
+      const count = document.createElement('div'); count.className='folder-count'; count.textContent = `${files.length} image${files.length!==1? 's':''}`;
+      card.appendChild(count);
+      container.appendChild(card);
+    });
+    sortedFoldersDiv.appendChild(container);
+  }catch(err){ sortedFoldersDiv.textContent = 'Error'; }
+}

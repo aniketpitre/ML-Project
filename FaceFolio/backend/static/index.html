@@ -19,7 +19,6 @@
     </div>
 
     <div id="status" class="muted">Server must be running at <code>/</code> and API at <code>/api/*</code></div>
-
     <div id="result" style="display:none">
       <h2>Scan result</h2>
       <div id="identified"></div>
@@ -29,6 +28,16 @@
         <button id="autoSortBtn" style="display:none; margin-left:8px">Sort (identified only)</button>
       </div>
     </div>
+
+    <section id="knownSection">
+      <h2>Known people</h2>
+      <div id="knownPeople" class="known-grid">Loading…</div>
+    </section>
+
+    <section id="sortedSection">
+      <h2>Sorted folders</h2>
+      <div id="sortedFolders">Loading…</div>
+    </section>
   </div>
   <script src="/static/app.js"></script>
 </body>
