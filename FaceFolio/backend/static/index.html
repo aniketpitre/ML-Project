@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FaceFolio - Minimal UI</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>FaceFolio — Upload Photo</h1>
+
+    <div id="uploader">
+      <label class="file-label">
+        <input id="fileInput" type="file" accept="image/*" />
+        <span class="file-chooser">Choose a photo</span>
+      </label>
+      <button id="uploadBtn" class="primary">Upload & Scan</button>
+    </div>
+
+    <div id="status" class="muted">Server must be running at <code>/</code> and API at <code>/api/*</code></div>
+
+    <div id="result" style="display:none">
+      <h2>Scan result</h2>
+      <div id="identified"></div>
+      <div id="unidentified"></div>
+      <div style="margin-top:12px">
+        <button id="finalizeBtn" style="display:none">Finalize & Sort</button>
+        <button id="autoSortBtn" style="display:none; margin-left:8px">Sort (identified only)</button>
+      </div>
+    </div>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

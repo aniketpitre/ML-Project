@@ -117,6 +117,19 @@ app.add_middleware(
 # Serve the cropped face images as static files
 app.mount(f"/{TEMP_CROP_DIR}", StaticFiles(directory=TEMP_CROP_DIR), name="crops")
 
+# Serve a minimal frontend (single-page app) from the static/ directory at the root.
+# This allows visiting http://<host>:<port>/ to load the UI while keeping API routes
+# Mount the frontend static assets under /static to avoid catching API routes.
+app.mount("/static", StaticFiles(directory="static"), name="static_files")
+
+from fastapi.responses import FileResponse
+
+
+@app.get("/", include_in_schema=False)
+def serve_ui():
+    """Serve the single-page UI index."""
+    return FileResponse(os.path.join("static", "index.html"))
+
 
 # --- API Models ---
 class NewLabel(BaseModel):

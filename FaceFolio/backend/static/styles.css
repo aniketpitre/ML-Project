@@ -1,0 +1,31 @@
+:root{
+	--bg: #f6f7fb;
+	--card: #ffffff;
+	--muted: #7b7f87;
+	--accent: #ff6b00; /* Swiggy-like warm accent */
+	--accent-2: #ff8f43;
+	--radius: 12px;
+}
+body{ font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#0f1720; margin:0 }
+.container{ max-width:920px; margin:36px auto; background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.95)); padding:28px; border-radius:16px; box-shadow:0 10px 30px rgba(15,23,32,0.06) }
+.header{ display:flex; align-items:center; gap:14px }
+.logo{ width:48px; height:48px; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); display:flex; align-items:center; justify-content:center; color:white; font-weight:700 }
+h1{ margin:0; font-size:20px }
+.tag{ color:var(--muted); font-size:13px; margin-top:6px }
+.uploader-row{ display:flex; gap:12px; align-items:center; margin-top:18px }
+.file-label{ display:inline-flex; align-items:center; gap:10px; background:transparent; border:1px dashed rgba(15,23,32,0.06); padding:10px 16px; border-radius:10px; cursor:pointer }
+.file-label input{ display:none }
+.file-chooser{ color:var(--muted); font-size:14px }
+.primary{ background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:white; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; box-shadow:0 6px 18px rgba(255,107,0,0.12); transition:transform .12s ease, box-shadow .12s ease }
+.primary:hover{ transform:translateY(-2px) }
+#status{ color:var(--muted); margin-top:12px }
+.result-area{ margin-top:20px }
+.identified-list{ display:flex; flex-wrap:wrap; gap:10px; margin-top:8px }
+.badge{ background:linear-gradient(180deg,#fff,#fff); padding:8px 12px; border-radius:999px; border:1px solid rgba(15,23,32,0.04); box-shadow:0 6px 20px rgba(11,15,20,0.03) }
+.grid{ display:flex; gap:12px; flex-wrap:wrap; margin-top:12px }
+.card{ width:160px; padding:8px; border-radius:10px; background:var(--card); box-shadow:0 8px 20px rgba(15,23,32,0.04); display:flex; flex-direction:column }
+.card img{ width:100%; height:120px; object-fit:cover; border-radius:8px }
+.card input{ width:100%; margin-top:8px; padding:8px; border-radius:8px; border:1px solid rgba(15,23,32,0.06) }
+button.ghost{ background:transparent; border:1px solid rgba(15,23,32,0.06); padding:8px 12px; border-radius:8px; cursor:pointer }
+.muted{ color:var(--muted) }
+@media (max-width:640px){ .container{ margin:16px; padding:16px } .card{ width:140px } }
