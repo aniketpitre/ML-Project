@@ -1,0 +1,15 @@
+# Ignore Python virtual environments and caches
+backend/venv/
+venv/
+__pycache__/
+*.pyc
+
+# Runtime files
+face_encodings.pickle
+temp_uploads/
+temp_crops/
+sorted_photos/
+
+# OS files
+.DS_Store
+Thumbs.db
