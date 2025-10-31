@@ -43,23 +43,7 @@ Static cropped face images are served under `/temp_crops/` (mounted in the app).
   - `identified_people` — list of names matched from `face_encodings.pickle`
   - `unidentified_faces` — array of `{temp_id, image_url}` to allow labeling
 
-Example upload using curl:
 
-```bash
-curl -F "file=@/path/to/photo.jpg" http://127.0.0.1:8000/api/process-photo
-```
-
-The response (example):
-
-```json
-{
-  "temp_photo_path": "temp_uploads/photo.jpg",
-  "identified_people": ["alice","bob"],
-  "unidentified_faces": [
-    {"temp_id":"<uuid>", "image_url":"/temp_crops/<uuid>.jpg"}
-  ]
-}
-```
 
 2) POST /api/finalize-and-sort
 
@@ -68,19 +52,9 @@ The response (example):
   - `identified_people` (array of strings): existing names detected
   - `new_labels` (array of {temp_id, name}): label unknown faces
 
-Example finalize payload (auto-label known names only):
 
-```bash
-printf '%s\n' '{"temp_photo_path":"temp_uploads/photo.jpg","identified_people":["alice"],"new_labels":[]}' > /tmp/finalize.json
-curl -H "Content-Type: application/json" -d @/tmp/finalize.json http://127.0.0.1:8000/api/finalize-and-sort
-```
 
-Example finalize payload with new labels:
 
-```bash
-printf '%s\n' '{"temp_photo_path":"temp_uploads/photo.jpg","identified_people":[],"new_labels":[{"temp_id":"<uuid>","name":"charlie"}]}' > /tmp/finalize.json
-curl -H "Content-Type: application/json" -d @/tmp/finalize.json http://127.0.0.1:8000/api/finalize-and-sort
-```
 
 What finalize does:
 - Appends any new face encodings to `face_encodings.pickle` with the provided names.
@@ -96,14 +70,7 @@ What finalize does:
    - Providing a JSON mapping of `temp_id` → `name` to `/api/finalize-and-sort` as `new_labels`.
 4. Call `/api/finalize-and-sort` to persist the encodings and copy the original photo into each person's folder.
 
-### Cleanup commands
 
-To clear runtime artifacts (safe to run when server is stopped or you don't need the data):
-
-```bash
-cd FaceFolio/backend
-rm -rf temp_uploads/* temp_crops/* sorted_photos/* face_encodings.pickle
-```
 
 Keep `.gitkeep` if present, or use `-f` to remove everything.
 
@@ -209,33 +176,4 @@ IMPORTANT NOTES
 - Names are used as folder names. Avoid slashes or weird characters in names (I can add sanitization if you want).
 - Matching is not perfect; change the threshold in `main.py` if you need stricter/looser matching.
 
-HOW TO ADD THESE CHANGES TO GITHUB (PowerShell commands)
-1. Stage changed files (from repo root):
 
-```powershell
-git add backend/README.md .gitignore
-```
-
-2. Commit:
-
-```powershell
-git commit -m "docs: friendly README + venv ignore"
-```
-
-3. Push to origin (main):
-
-```powershell
-git push origin main
-```
-
-If your remote is set and your credentials are configured, this will update your repository on GitHub. If you use an access token, you may need to configure a credential helper or provide credentials when prompted.
-
-WANT ME TO DO IT FOR YOU?
-- I can commit and push these README and .gitignore changes for you now. If you want that, confirm and I will run the commit + push.
-
-That's the minimal, plain-language guide. If you'd like, I can also:
-- Add sanitization for names (avoid problematic characters),
-- Run a live test by uploading one of the images already in the `backend/` folder and show the exact response,
-- Or create a short cheat-sheet file `HOWTO.md` with the same content.
-
-Happy to do the push now if you confirm.
